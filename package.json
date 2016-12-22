@@ -1,0 +1,23 @@
+{
+  "name": "vk-statistic",
+  "description": "App for work with vk-api and d3.js",
+  "version": "0.0.1",
+  "main": "app.js",
+  "author": "Ivan Pazthitnykh <ivan.pazhitnykh@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "run": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "connect": "^3.5.0",
+    "connect-send-json": "^1.0.0",
+    "jquery": "^3.1.1",
+    "request": "^2.79.0",
+    "serve-static": "^1.11.1"
+  },
+  "license": "MIT"
+}
