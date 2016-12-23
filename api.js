@@ -31,10 +31,12 @@ exports.auth = function(req, res, next) {
 
 exports.getFriends = function(req, res, next) {
     request({
+        user_id: req.body.userId,
         url: VK_API_URL + 'friends.get',
         qs: {
             access_token: req.body.token,
-            v: API_VERSION
+            v: API_VERSION,
+            fields: 'photo_50, sex, bdate'
         },
         method: 'POST'
     }, function(error, response, body) {

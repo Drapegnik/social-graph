@@ -10,8 +10,8 @@ const userIdRegEx = /&user_id=(.*)/;
 var token = window.location.hash.match(tokenRegEx)[1];
 var userId = window.location.hash.match(userIdRegEx)[1];
 
-var getFriends = function() {
-    console.log('Loading your friends...');
+var getFriends = function(id) {
+    console.log('Loading friends for ' + id + '...');
 
     $.ajax('/getFriends', {
         type: 'POST',
@@ -21,12 +21,15 @@ var getFriends = function() {
         error: function(err) {
             console.error(err);
         },
-        data: {token: token}
+        data: {
+            token: token,
+            userId: id
+        }
     });
 };
 
 if (token && userId) {
     console.log('Successfully login into vk!');
     $('#message').text('Hello!');
-    getFriends();
+    getFriends(userId);
 }
