@@ -14,7 +14,9 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "connect": "^3.5.0",
+    "connect-redirection": "0.0.1",
     "connect-send-json": "^1.0.0",
+    "d3": "^4.4.0",
     "jquery": "^3.1.1",
     "request": "^2.79.0",
     "serve-static": "^1.11.1"
