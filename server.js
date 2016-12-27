@@ -4,30 +4,29 @@
  * Created by Drapegnik on 22.12.16.
  */
 
-var connect = require('connect');
-var serveStatic = require('serve-static');
+var express = require('express');
 var bodyParser = require('body-parser');
-var http = require('http');
-var send = require('connect-send-json');
-var redirect = require('connect-redirection');
 
 var api = require('./api');
 
-var app = connect();
-app.use(bodyParser());
-app.use(serveStatic(__dirname));
-app.use(send.json());
-app.use(redirect());
+var app = express();
+app.set('view engine', 'ejs');
+app.set('views', __dirname);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use('/', express.static(__dirname));
 
-// app.use('/auth/callback', api.authCallback);
 app.use('/auth', api.auth);
 app.use('/getFriends', api.getFriends);
-
+app.use('/home', api.home);
+app.use('/', api.login);
 
 app.use(function onError(err, req, res, next) {
     console.error(err);
+    res.status(err.status);
+    res.send(err.message);
 });
 
-http.createServer(app).listen(3000, function() {
+app.listen(3000, function() {
     console.log('Server start on http://local.host:3000');
 });
