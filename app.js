@@ -52,14 +52,14 @@ var addFriendToGraph = function(userIndex, friend) {
 };
 
 var draw = function() {
-    var svg = d3.select('body').append('svg')
+    var svg = d3.select('div').append('svg')
         .attr('width', width)
         .attr('height', height);
 
     var simulation = d3.forceSimulation(graph.nodes)
         .force('link', d3.forceLink(graph.links).id(function(d) { return d.id; }))
-        .force('charge', d3.forceManyBody().strength(-800).distanceMax(1000))
-        .force('center', d3.forceCenter().x(450).y(450))
+        .force('charge', d3.forceManyBody().strength(-700).distanceMax(700))
+        .force('center', d3.forceCenter().x(450).y(350))
         .on('tick', tick);
 
 
