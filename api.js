@@ -82,12 +82,10 @@ exports.getMutual = function(req, res, next) {
         body = JSON.parse(body);
 
         if (body.error) {
-            // return next({
-            //     status: 500,
-            //     message: body.error.error_msg
-            // });
-            console.error(body.error);
-            res.json({});
+            return next({
+                status: 500,
+                message: body.error.error_msg
+            });
         }
 
         res.json(body.response);

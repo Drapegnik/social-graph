@@ -7,6 +7,7 @@
 vkGraphApp.controller('HomeCtrl', ['$http', '$location', '$q', function($http, $location, $q) {
     const tokenRegEx = /access_token=(.*)&expires_in/;
     const userIdRegEx = /&user_id=(.*)/;
+    const vkApiMaxRequestsInSecond = 7;
 
     if ($location.$$hash.match(tokenRegEx)) {
         var token = $location.$$hash.match(tokenRegEx)[1];
@@ -67,7 +68,7 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', '$q', function($http, $
             .data(graph.links)
             .enter().append('line')
             .style('stroke', '#ccc')
-            .style('stroke-width', 1);
+            .style('stroke-width', 0.5);
 
         var nodes = svg.selectAll('g.node')
             .data(graph.nodes)
@@ -127,7 +128,7 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', '$q', function($http, $
                 var friendsChunks = _.chunk(friends.map(function(friend) {
                     if (!friend.deactivated)
                         return friend.id;
-                }), Math.round(friends.length / 7));
+                }), Math.round(friends.length / vkApiMaxRequestsInSecond));
 
                 var urlCalls = [];
                 friendsChunks.forEach(function(chunk) {
@@ -137,23 +138,25 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', '$q', function($http, $
                 return $q.all(urlCalls);
             })
             .then(function(responses) {
+                var linksCounter = 0;
+
                 responses.forEach(function(response) {
                     if (!response.data || typeof response.data[Symbol.iterator] !== 'function')
                         return;
-
                     response.data.forEach(function(friend) {
                         friend.common_friends.forEach(function(target) {
                             graph.links.push({
                                 source: friend.id,
                                 target: target
                             });
+                            linksCounter += 1;
                         });
 
 
                     });
                 });
 
-                console.log('Successfully get common friends');
+                console.log('Successfully get ' + linksCounter + ' links');
                 draw(graph);
             })
             .catch(function(err) {
