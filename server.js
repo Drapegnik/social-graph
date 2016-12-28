@@ -19,6 +19,7 @@ app.use('/', express.static(__dirname));
 app.use('/api/auth', api.auth);
 app.use('/api/getUser', api.getUser);
 app.use('/api/getFriends', api.getFriends);
+app.use('/api/getMutual', api.getMutual);
 app.use('/home', api.home);
 app.use('/', api.login);
 

@@ -4,7 +4,7 @@
  * Created by Drapegnik on 22.12.16.
  */
 
-vkGraphApp.controller('HomeCtrl', ['$http', '$location', function($http, $location) {
+vkGraphApp.controller('HomeCtrl', ['$http', '$location', '$q', function($http, $location, $q) {
     const tokenRegEx = /access_token=(.*)&expires_in/;
     const userIdRegEx = /&user_id=(.*)/;
 
@@ -23,6 +23,15 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', function($http, $locati
 
     var width = 900;
     var height = 900;
+    var center = {
+        x: 450,
+        y: 250
+    };
+    var charge = {
+        strength: -150,
+        maxDist: 250
+    };
+    var nodeRadius = 10;
 
     var parseUserInfo = function(user) {
         return {
@@ -49,8 +58,8 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', function($http, $locati
 
         var simulation = d3.forceSimulation(graph.nodes)
             .force('link', d3.forceLink(graph.links).id(function(d) { return d.id; }))
-            .force('charge', d3.forceManyBody().strength(-700).distanceMax(700))
-            .force('center', d3.forceCenter().x(450).y(350))
+            .force('charge', d3.forceManyBody().strength(charge.strength).distanceMax(charge.maxDist))
+            .force('center', d3.forceCenter().x(center.x).y(center.y))
             .on('tick', tick);
 
 
@@ -65,18 +74,18 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', function($http, $locati
             .enter().append('g');
 
         nodes.append('circle')
-            .attr('r', 10);
+            .attr('r', nodeRadius);
 
         var clipPath = nodes.append('clipPath').attr('id', 'clipCircle');
         clipPath.append('circle')
-            .attr('r', 20);
+            .attr('r', nodeRadius);
 
         var images = nodes.append('svg:image')
             .attr('xlink:href', function(d) { return d.photo;})
-            .attr('x', function(d) { return -20;})
-            .attr('y', function(d) { return -20;})
-            .attr('height', 40)
-            .attr('width', 40)
+            .attr('x', function(d) { return -nodeRadius;})
+            .attr('y', function(d) { return -nodeRadius;})
+            .attr('height', 2 * nodeRadius)
+            .attr('width', 2 * nodeRadius)
             .attr('clip-path', 'url(#clipCircle)');
 
         function tick() {
@@ -115,10 +124,37 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', function($http, $locati
                     addFriendToGraph(userId, friend);
                 });
 
+                var friendsChunks = _.chunk(friends.map(function(friend) {return friend.id}), Math.round(friends.length / 7));
+
+                var urlCalls = [];
+                friendsChunks.forEach(function(chunk) {
+                    urlCalls.push($http.post('/api/getMutual', {token: token, userId: userId, friendsIds: chunk}));
+                });
+
+                return $q.all(urlCalls);
+            })
+            .then(function(responses) {
+                responses.forEach(function(response) {
+                    if (!response.data || typeof response.data[Symbol.iterator] !== 'function')
+                        return;
+
+                    response.data.forEach(function(friend) {
+                        friend.common_friends.forEach(function(target) {
+                            graph.links.push({
+                                source: friend.id,
+                                target: target
+                            });
+                        });
+
+
+                    });
+                });
+
+                console.log('Successfully get common friends');
                 draw(graph);
             })
             .catch(function(err) {
                 console.error(err);
-            })
+            });
     }
 }]);

@@ -66,6 +66,34 @@ exports.getFriends = function(req, res, next) {
     });
 };
 
+exports.getMutual = function(req, res, next) {
+    request({
+        url: VK_API_URL + 'friends.getMutual',
+        qs: {
+            access_token: req.body.token,
+            v: API_VERSION,
+            target_uids: req.body.friendsIds
+        },
+        method: 'POST'
+    }, function(error, response, body) {
+        if (error)
+            return next(error);
+
+        body = JSON.parse(body);
+
+        if (body.error) {
+            // return next({
+            //     status: 500,
+            //     message: body.error.error_msg
+            // });
+            console.error(body.error);
+            res.json({});
+        }
+
+        res.json(body.response);
+    });
+};
+
 exports.login = function(req, res, next) {
     res.render('index.ejs', {
         view: "'app/login.html'"
