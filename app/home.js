@@ -4,13 +4,13 @@
  * Created by Drapegnik on 22.12.16.
  */
 
-vkGraphApp.controller('HomeCtrl', [function() {
-    const tokenRegEx = /#access_token=(.*)&expires_in/;
+vkGraphApp.controller('HomeCtrl', ['$http', '$location', function($http, $location) {
+    const tokenRegEx = /access_token=(.*)&expires_in/;
     const userIdRegEx = /&user_id=(.*)/;
 
-    if (window.location.hash.match(tokenRegEx)) {
-        var token = window.location.hash.match(tokenRegEx)[1];
-        var userId = parseInt(window.location.hash.match(userIdRegEx)[1]);
+    if ($location.$$hash.match(tokenRegEx)) {
+        var token = $location.$$hash.match(tokenRegEx)[1];
+        var userId = parseInt($location.$$hash.match(userIdRegEx)[1]);
     }
 
     var graph = {
@@ -24,29 +24,17 @@ vkGraphApp.controller('HomeCtrl', [function() {
     var width = 900;
     var height = 900;
 
-    var getFriends = function(id, callback) {
-        console.log('Loading friends for ' + id + '...');
-
-        $.ajax('/getFriends', {
-            type: 'POST',
-            success: callback,
-            error: function(err) {
-                console.error(err);
-            },
-            data: {
-                token: token,
-                userId: id
-            }
-        });
+    var parseUserInfo = function(user) {
+        return {
+            id: user.id,
+            name: user.first_name + ' ' + user.last_name,
+            sex: user.sex,
+            photo: user.photo_50
+        }
     };
 
     var addFriendToGraph = function(userIndex, friend) {
-        graph.nodes.push({
-            id: friend.id,
-            name: friend.first_name + ' ' + friend.last_name,
-            sex: friend.sex,
-            photo: friend.photo_50
-        });
+        graph.nodes.push(parseUserInfo(friend));
 
         graph.links.push({
             source: userIndex,
@@ -110,21 +98,27 @@ vkGraphApp.controller('HomeCtrl', [function() {
 
     if (token && userId) {
         console.log('Successfully login into vk!');
-        
-        graph.nodes.push({
-            id: userId,
-            name: 'You'
-        });
+        var me;
 
-        getFriends(userId, function(response) {
+        $http.post('/api/getUser', {token: token, userId: userId})
+            .then(function(response) {
+                me = parseUserInfo(response.data[0]);
+                graph.nodes.push(me);
+                return $http.post('/api/getFriends', {token: token, userId: userId});
+            })
+            .then(function(response) {
+                var friends = response.data.items;
 
-            var friends = response.items;
+                console.log('Successfully get ' + friends.length + ' friends for ' + me.name);
 
-            friends.forEach(function(friend) {
-                addFriendToGraph(userId, friend);
-            });
+                friends.forEach(function(friend) {
+                    addFriendToGraph(userId, friend);
+                });
 
-            draw(graph);
-        });
+                draw(graph);
+            })
+            .catch(function(err) {
+                console.error(err);
+            })
     }
 }]);

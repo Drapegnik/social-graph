@@ -30,6 +30,24 @@ exports.auth = function(req, res, next) {
     }));
 };
 
+exports.getUser = function(req, res, next) {
+    request({
+        user_ids: req.body.userId,
+        url: VK_API_URL + 'users.get',
+        qs: {
+            access_token: req.body.token,
+            v: API_VERSION,
+            fields: 'photo_50, sex, bdate'
+        },
+        method: 'GET'
+    }, function(error, response, body) {
+        if (error)
+            return next(error);
+
+        res.json(JSON.parse(body).response);
+    });
+};
+
 exports.getFriends = function(req, res, next) {
     request({
         user_id: req.body.userId,
