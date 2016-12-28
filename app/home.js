@@ -31,7 +31,7 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', '$q', function($http, $
         strength: -150,
         maxDist: 250
     };
-    var nodeRadius = 10;
+    var nodeRadius = 12;
 
     var parseUserInfo = function(user) {
         return {
@@ -124,7 +124,10 @@ vkGraphApp.controller('HomeCtrl', ['$http', '$location', '$q', function($http, $
                     addFriendToGraph(userId, friend);
                 });
 
-                var friendsChunks = _.chunk(friends.map(function(friend) {return friend.id}), Math.round(friends.length / 7));
+                var friendsChunks = _.chunk(friends.map(function(friend) {
+                    if (!friend.deactivated)
+                        return friend.id;
+                }), Math.round(friends.length / 7));
 
                 var urlCalls = [];
                 friendsChunks.forEach(function(chunk) {
