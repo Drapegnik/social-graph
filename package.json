@@ -16,7 +16,9 @@
     "angular-resource": "^1.6.1",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.7",
+    "bootstrap-sass": "^3.3.7",
     "bootstrap-social": "^5.1.1",
+    "bootswatch": "^3.3.7",
     "d3": "^4.4.0",
     "ejs": "^2.5.5",
     "express": "^4.14.0",
@@ -25,6 +27,17 @@
     "lodash": "^4.17.3",
     "mime": "^1.3.4",
     "request": "^2.79.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.6.0",
+    "grunt": "^0.4.5",
+    "grunt-concurrent": "^1.0.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-compass": "^1.0.0",
+    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-postcss": "^0.8.0",
+    "jit-grunt": "^0.9.1",
+    "time-grunt": "^1.4.0"
   },
   "license": "MIT"
 }
