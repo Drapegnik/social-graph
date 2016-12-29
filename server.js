@@ -23,7 +23,7 @@ app.use('/api/getMutual', api.getMutual);
 app.use('/home', api.home);
 app.use('/', api.login);
 
-app.use(function onError(err, req, res, next) {
+app.use(function onError(err, req, res) {
     console.error(err);
     res.status(err.status);
     res.send(err.message);

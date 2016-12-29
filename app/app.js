@@ -4,6 +4,4 @@
  * Created by Drapegnik on 27.12.16.
  */
 
-var vkGraphApp = angular.module('vkGraphApp', [
-    'ngResource'
-]);
+var vkGraphApp = angular.module('vkGraphApp', ['ngResource']); // jshint ignore:line

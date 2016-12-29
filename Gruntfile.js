@@ -10,7 +10,8 @@ module.exports = function(grunt) {
     require('time-grunt')(grunt);
 
     // Automatically load required Grunt tasks
-    require('jit-grunt')(grunt);
+    // require('jit-grunt')(grunt);
+    require('load-grunt-tasks')(grunt);
 
     // Project configuration.
     grunt.initConfig({
@@ -29,14 +30,10 @@ module.exports = function(grunt) {
         postcss: {
             options: {
                 map: true,
-                processors: [
-                    require('autoprefixer')
-                ]
+                processors: [require('autoprefixer')]
             },
             server: {
-                options: {
-                    map: true
-                },
+                options: {map: true},
                 files: [{
                     expand: true,
                     cwd: 'app/styles/',
@@ -64,14 +61,8 @@ module.exports = function(grunt) {
                 assetCacheBuster: false,
                 raw: 'Sass::Script::Number.precision = 10\n'
             },
-            dist: {
-                options: {}
-            },
-            server: {
-                options: {
-                    sourcemap: true
-                }
-            }
+            dist: {options: {}},
+            server: {options: {sourcemap: true}}
         },
 
         // minimize .css
@@ -89,19 +80,26 @@ module.exports = function(grunt) {
 
         // Run some tasks in parallel to speed up the build process
         concurrent: {
-            server: [
-                'compass:server'
-            ],
-            test: [
-                'compass'
-            ],
-            dist: [
-                'compass:dist'
+            server: ['compass:server'],
+            test: ['compass'],
+            dist: ['compass:dist']
+        },
+
+        // Make sure there are no obvious mistakes
+        jshint: {
+            options: {
+                jshintrc: '.jshintrc'
+            },
+            all: [
+                '{,*/}*.js',
+                '!node_modules/'
             ]
         }
-
-
     });
+
+    grunt.registerTask('hint', [
+        'jshint'
+    ]);
 
     // Default task(s).
     grunt.registerTask('default', [
@@ -110,5 +108,4 @@ module.exports = function(grunt) {
         'postcss',
         'cssmin'
     ]);
-
 };

@@ -19,10 +19,10 @@ vkGraphApp.service('Vk', ['$http', '$q', function($http, $q) {
     var parseUserInfo = function(user) {
         return {
             id: user.id,
-            name: user.first_name + ' ' + user.last_name,
+            name: user.first_name + ' ' + user.last_name,   // jshint ignore:line
             sex: user.sex,
-            photo: user.photo_50
-        }
+            photo: user.photo_50    // jshint ignore:line
+        };
     };
 
     var addFriendToGraph = function(userIndex, friend) {
@@ -53,8 +53,9 @@ vkGraphApp.service('Vk', ['$http', '$q', function($http, $q) {
                 });
 
                 var friendsChunks = _.chunk(friends.map(function(friend) {
-                    if (!friend.deactivated)
+                    if (!friend.deactivated) {
                         return friend.id;
+                    }
                 }), Math.round(friends.length / Vk.maxRequestsInSecond));
 
                 var urlCalls = [];
@@ -68,10 +69,11 @@ vkGraphApp.service('Vk', ['$http', '$q', function($http, $q) {
                 var linksCounter = 0;
 
                 responses.forEach(function(response) {
-                    if (!response.data || typeof response.data[Symbol.iterator] !== 'function')
+                    if (!response.data || typeof response.data[Symbol.iterator] !== 'function') {
                         return;
+                    }
                     response.data.forEach(function(friend) {
-                        friend.common_friends.forEach(function(target) {
+                        friend.common_friends.forEach(function(target) {    // jshint ignore:line
                             graph.links.push({
                                 source: friend.id,
                                 target: target
@@ -89,5 +91,5 @@ vkGraphApp.service('Vk', ['$http', '$q', function($http, $q) {
             .catch(function(err) {
                 console.error(err);
             });
-    }
+    };
 }]);

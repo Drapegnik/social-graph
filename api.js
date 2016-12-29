@@ -6,7 +6,6 @@
 
 var request = require('request');
 var url = require('url');
-var fs = require('fs');
 
 var API_VERSION = '5.60';
 var VK_AUTH_URL = 'oauth.vk.com/authorize/';
@@ -15,16 +14,16 @@ var REDIRECT_URL = 'http://local.host:3000/home';
 var VK_API_URL = 'https://api.vk.com/method/';
 
 
-exports.auth = function(req, res, next) {
+exports.auth = function(req, res) {
     res.redirect(url.format({
         host: VK_AUTH_URL,
         protocol: 'https:',
         query: {
-            client_id: APP_ID,
-            redirect_uri: REDIRECT_URL,
+            client_id: APP_ID,  // jshint ignore:line
+            redirect_uri: REDIRECT_URL, // jshint ignore:line
             scope: 'friends',
             display: 'page',
-            response_type: 'token',
+            response_type: 'token', // jshint ignore:line
             v: API_VERSION
         }
     }));
@@ -32,17 +31,18 @@ exports.auth = function(req, res, next) {
 
 exports.getUser = function(req, res, next) {
     request({
-        user_ids: req.body.userId,
+        user_ids: req.body.userId,  // jshint ignore:line
         url: VK_API_URL + 'users.get',
         qs: {
-            access_token: req.body.token,
+            access_token: req.body.token,   // jshint ignore:line
             v: API_VERSION,
             fields: 'photo_50, sex, bdate'
         },
         method: 'GET'
     }, function(error, response, body) {
-        if (error)
+        if (error) {
             return next(error);
+        }
 
         res.json(JSON.parse(body).response);
     });
@@ -50,17 +50,18 @@ exports.getUser = function(req, res, next) {
 
 exports.getFriends = function(req, res, next) {
     request({
-        user_id: req.body.userId,
+        user_id: req.body.userId,   // jshint ignore:line
         url: VK_API_URL + 'friends.get',
         qs: {
-            access_token: req.body.token,
+            access_token: req.body.token,   // jshint ignore:line
             v: API_VERSION,
             fields: 'photo_50, sex, bdate'
         },
         method: 'POST'
     }, function(error, response, body) {
-        if (error)
+        if (error) {
             return next(error);
+        }
 
         res.json(JSON.parse(body).response);
     });
@@ -70,21 +71,22 @@ exports.getMutual = function(req, res, next) {
     request({
         url: VK_API_URL + 'friends.getMutual',
         qs: {
-            access_token: req.body.token,
+            access_token: req.body.token,   // jshint ignore:line
             v: API_VERSION,
-            target_uids: req.body.friendsIds
+            target_uids: req.body.friendsIds    // jshint ignore:line
         },
         method: 'POST'
     }, function(error, response, body) {
-        if (error)
+        if (error) {
             return next(error);
+        }
 
         body = JSON.parse(body);
 
         if (body.error) {
             return next({
                 status: 500,
-                message: body.error.error_msg
+                message: body.error.error_msg   // jshint ignore:line
             });
         }
 
@@ -92,14 +94,14 @@ exports.getMutual = function(req, res, next) {
     });
 };
 
-exports.login = function(req, res, next) {
+exports.login = function(req, res) {
     res.render('index.ejs', {
-        view: "'app/views/login.view.html'"
+        view: '"app/views/login.view.html"'
     });
 };
 
-exports.home = function(req, res, next) {
+exports.home = function(req, res) {
     res.render('index.ejs', {
-        view: "'app/views/home.view.html'"
+        view: '"app/views/home.view.html"'
     });
 };

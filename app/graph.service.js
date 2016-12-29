@@ -24,7 +24,7 @@ vkGraphApp.service('Graph', [function() {
             .attr('viewBox', '0 0 ' + Graph.width + ' ' + Graph.height)
             .attr('class', 'svg-content');
 
-        var simulation = d3.forceSimulation(data.nodes)
+        d3.forceSimulation(data.nodes)
             .force('link', d3.forceLink(data.links).id(function(d) { return d.id; }))
             .force('charge', d3.forceManyBody().strength(Graph.charge.strength).distanceMax(Graph.charge.maxDist))
             .force('center', d3.forceCenter().x(Graph.center.x).y(Graph.center.y))
@@ -50,26 +50,20 @@ vkGraphApp.service('Graph', [function() {
 
         nodes.append('svg:image')
             .attr('xlink:href', function(d) { return d.photo;})
-            .attr('x', function(d) { return -Graph.nodeRadius;})
-            .attr('y', function(d) { return -Graph.nodeRadius;})
+            .attr('x', function() { return -Graph.nodeRadius;})
+            .attr('y', function() { return -Graph.nodeRadius;})
             .attr('height', 2 * Graph.nodeRadius)
             .attr('width', 2 * Graph.nodeRadius)
             .attr('clip-path', 'url(#clipCircle)');
 
         function tick() {
-            links.attr('x1', function(d) { return d.source.x; })
+            links
+                .attr('x1', function(d) { return d.source.x; })
                 .attr('y1', function(d) { return d.source.y; })
                 .attr('x2', function(d) { return d.target.x; })
                 .attr('y2', function(d) { return d.target.y; });
 
-            nodes.attr('transform', function(d) {
-                return 'translate(' + d.x + ',' + d.y + ')';
-            });
-
-            nodes.attr('x', function(d) {return d.x = Math.max(16, Math.min(Graph.width - 16, d.x));})
-                .attr('y', function(d) {return d.y = Math.max(16, Math.min(Graph.height - 16, d.y));});
-
-            // simulation.alpha(0.4);
+            nodes.attr('transform', function(d) {return 'translate(' + d.x + ',' + d.y + ')';});
         }
     };
 }]);

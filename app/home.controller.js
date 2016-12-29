@@ -11,11 +11,8 @@ vkGraphApp.controller('HomeCtrl', ['$location', 'Graph', 'Vk', function($locatio
     if ($location.$$hash.match(tokenRegEx)) {
         var token = $location.$$hash.match(tokenRegEx)[1];
         var userId = parseInt($location.$$hash.match(userIdRegEx)[1]);
-    }
 
-    if (token && userId) {
         console.log('Successfully login into vk!');
-
         Vk.getGraphData(token, userId, Graph.draw);
     }
 }]);
