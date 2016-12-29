@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * Created by Drapegnik on 28.12.16.
+ */
+
 module.exports = function(grunt) {
 
     // Time how long tasks take. Can help when optimizing build times
@@ -61,8 +65,7 @@ module.exports = function(grunt) {
                 raw: 'Sass::Script::Number.precision = 10\n'
             },
             dist: {
-                options: {
-                }
+                options: {}
             },
             server: {
                 options: {

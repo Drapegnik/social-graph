@@ -94,12 +94,12 @@ exports.getMutual = function(req, res, next) {
 
 exports.login = function(req, res, next) {
     res.render('index.ejs', {
-        view: "'app/login.html'"
+        view: "'app/views/login.view.html'"
     });
 };
 
 exports.home = function(req, res, next) {
     res.render('index.ejs', {
-        view: "'app/home.html'"
+        view: "'app/views/home.view.html'"
     });
 };
