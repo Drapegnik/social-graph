@@ -24,7 +24,7 @@ vkGraphApp.service('Graph', [function() {
             .attr('viewBox', '0 0 ' + Graph.width + ' ' + Graph.height)
             .attr('class', 'svg-content');
 
-        d3.forceSimulation(data.nodes)
+        var simulation = d3.forceSimulation(data.nodes)
             .force('link', d3.forceLink(data.links).id(function(d) { return d.id; }))
             .force('charge', d3.forceManyBody().strength(Graph.charge.strength).distanceMax(Graph.charge.maxDist))
             .force('center', d3.forceCenter().x(Graph.center.x).y(Graph.center.y))
@@ -39,7 +39,13 @@ vkGraphApp.service('Graph', [function() {
 
         var nodes = svg.selectAll('g.node')
             .data(data.nodes)
-            .enter().append('g');
+            .enter().append('g')
+            .attr("class", "node");
+
+        nodes.call(d3.drag()
+            .on("start", dragstart)
+            .on("drag", dragmove)
+            .on("end", dragend));
 
         nodes.append('circle')
             .attr('r', Graph.nodeRadius);
@@ -56,6 +62,25 @@ vkGraphApp.service('Graph', [function() {
             .attr('width', 2 * Graph.nodeRadius)
             .attr('clip-path', 'url(#clipCircle)');
 
+
+        function dragstart(d) {
+            simulation.stop(); // stops the force auto positioning before you start dragging
+        }
+
+        function dragmove(d) {
+            d.px += d3.event.dx;
+            d.py += d3.event.dy;
+            d.x += d3.event.dx;
+            d.y += d3.event.dy;
+            tick(); // this is the key to make it work together with updating both px,py,x,y on d !
+        }
+
+        function dragend(d) {
+            d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+            tick();
+            simulation.restart();
+        }
+
         function tick() {
             links
                 .attr('x1', function(d) { return d.source.x; })
@@ -64,6 +89,9 @@ vkGraphApp.service('Graph', [function() {
                 .attr('y2', function(d) { return d.target.y; });
 
             nodes.attr('transform', function(d) {return 'translate(' + d.x + ',' + d.y + ')';});
+
+            nodes.attr("x", function(d) {return d.x = Math.max(16, Math.min(Graph.width - 16, d.x));})
+                .attr("y", function(d) {return d.y = Math.max(16, Math.min(Graph.height - 16, d.y));});
         }
     };
 }]);
