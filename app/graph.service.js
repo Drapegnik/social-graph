@@ -29,6 +29,7 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
     Graph.linksColor = '#ccc';
     Graph.linksSize = 0.5;
     Graph.highlightColor = '#ff6666';
+    Graph.opacity = 0.3;
 
     Graph.draw = function(data, myId) {
 
@@ -45,7 +46,7 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             .attr('viewBox', '0 0 ' + Graph.width + ' ' + Graph.height)
             .attr('class', 'svg-content');
 
-        d3.forceSimulation(data.nodes)
+        var simulation = d3.forceSimulation(data.nodes)
             .force('link', d3.forceLink(data.links).id(function(d) { return d.id; }))
             .force('charge', d3.forceManyBody().strength(Graph.charge.strength).distanceMax(Graph.charge.maxDist))
             .force('center', d3.forceCenter().x(Graph.center.x).y(Graph.center.y))
@@ -82,19 +83,29 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             .attr('width', function(d) {return 2 * getNodeRadius(d);})
             .attr('clip-path', 'url(#clipCircle)');
 
-        nodes.on('mouseover', function(d) {
-            highlightNode(d);
-            $rootScope.$apply(function() {
-                $rootScope.currentName = d.name;
+        nodes
+            .on('mouseover', function(d) {
+                highlightNode(d);
+                $rootScope.$apply(function() {$rootScope.currentName = d.name;});
+            })
+            .on('mouseout', function() {
+                unHighlightNode();
+                $rootScope.$apply(function() {$rootScope.currentName = '';});
+            })
+            .on('mousedown', function(d) {
+                simulation.stop();
+                links.style('opacity', function(o) {
+                    return o.source.id == d.id || o.target.id == d.id ? 1 : Graph.opacity;
+                });
+                nodes.style('opacity', function(o) {
+                    return isConnected(d, o) ? 1 : Graph.opacity;
+                })
+            })
+            .on('mouseup', function(d) {
+                links.style('opacity', 1);
+                nodes.style('opacity', 1);
+                simulation.restart();
             });
-        });
-
-        nodes.on('mouseout', function() {
-            unHighlightNode();
-            $rootScope.$apply(function() {
-                $rootScope.currentName = '';
-            });
-        });
 
         function tick() {
             links
