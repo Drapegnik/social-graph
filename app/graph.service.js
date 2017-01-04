@@ -22,12 +22,25 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
     var male = 2;
 
     Graph.charge = {
-        strength: -minDem / 2,
+        strength: -minDem / 1.5,
         maxDist: minDem / 3
     };
     Graph.nodeRadius = minDem / 50;
+    Graph.linksColor = '#ccc';
+    Graph.linksSize = 0.5;
+    Graph.highlightColor = '#ff6666';
 
     Graph.draw = function(data, myId) {
+
+        var linkedByIndex = {};
+        data.links.forEach(function(d) {
+            linkedByIndex[d.source + "," + d.target] = true;
+        });
+
+        function isConnected(a, b) {
+            return linkedByIndex[a.id + "," + b.id] || linkedByIndex[b.id + "," + a.id] || a.id === b.id;
+        }
+
         var svg = d3.select('#graph').append('svg')
             .attr('viewBox', '0 0 ' + Graph.width + ' ' + Graph.height)
             .attr('class', 'svg-content');
@@ -38,38 +51,22 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             .force('center', d3.forceCenter().x(Graph.center.x).y(Graph.center.y))
             .on('tick', tick);
 
-        var getNodeRadius = function(d) {
-            if (d.id === myId) {
-                return Graph.nodeRadius * 1.5;
-            } else {
-                return Graph.nodeRadius;
-            }
-        };
-
         var links = svg.selectAll('line')
             .data(data.links)
             .enter().append('line')
-            .style('stroke', '#ccc')
-            .style('stroke-width', 0.5);
+            .style('stroke', Graph.linksColor)
+            .style('stroke-width', Graph.linksSize);
 
         var nodes = svg.selectAll('g.node')
             .data(data.nodes)
             .enter().append('g')
             .attr('class', 'node')
-            .style('stroke', function(d) {
-                if (d.sex === female) {
-                    return 'ffcce5';
-                } else if (d.sex === male) {
-                    return 'cce5ff';
-                } else {
-                    return 'white';
-                }
-            })
+            .style('stroke', getNodeColor)
             .style('stroke-width', function(d) {
                 return getNodeRadius(d) / 4;
             });
 
-        nodes.append('circle')
+        var circles = nodes.append('circle')
             .attr('r', getNodeRadius);
 
         var clipPath = nodes.append('clipPath').attr('id', 'clipCircle');
@@ -85,13 +82,15 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             .attr('width', function(d) {return 2 * getNodeRadius(d);})
             .attr('clip-path', 'url(#clipCircle)');
 
-        nodes.on("mouseover", function(d) {
+        nodes.on('mouseover', function(d) {
+            highlightNode(d);
             $rootScope.$apply(function() {
                 $rootScope.currentName = d.name;
             });
         });
 
-        nodes.on("mouseout", function() {
+        nodes.on('mouseout', function() {
+            unHighlightNode();
             $rootScope.$apply(function() {
                 $rootScope.currentName = '';
             });
@@ -105,6 +104,45 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
                 .attr('y2', function(d) { return d.target.y; });
 
             nodes.attr('transform', function(d) {return 'translate(' + d.x + ',' + d.y + ')';});
+        }
+
+        function getNodeRadius(d) {
+            if (d.id === myId) {
+                return Graph.nodeRadius * 1.5;
+            } else {
+                return Graph.nodeRadius;
+            }
+        }
+
+        function getNodeColor(d) {
+            if (d.sex === female) {
+                return 'ffcce5';
+            } else if (d.sex === male) {
+                return 'cce5ff';
+            } else {
+                return 'white';
+            }
+        }
+
+        function highlightNode(d) {
+            svg.style('cursor', 'pointer');
+            circles.style('stroke', function(o) {
+                return isConnected(d, o) ? Graph.highlightColor : getNodeColor(o);
+            });
+            links.style('stroke-width', function(o) {
+                return o.source.id == d.id || o.target.id == d.id ? Graph.linksSize * 3 : Graph.linksSize;
+            }).style('stroke', function(o) {
+                return o.source.id == d.id || o.target.id == d.id ? Graph.highlightColor : Graph.linksColor;
+            });
+        }
+
+        function unHighlightNode() {
+            svg.style('cursor', 'default');
+            circles.style('stroke', getNodeColor);
+            links
+                .style('stroke', Graph.linksColor)
+                .style('stroke-width', Graph.linksSize);
+
         }
     };
 }]);

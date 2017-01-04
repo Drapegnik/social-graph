@@ -4,7 +4,7 @@
  * Created by Drapegnik on 22.12.16.
  */
 
-angular.module('vkGraphApp').controller('HomeCtrl', ['$location', 'Graph', 'Vk', '$scope', '$rootScope', function($location, Graph, Vk, $scope, $rootScope) {
+angular.module('vkGraphApp').controller('HomeCtrl', ['$location', 'Graph', 'Vk', function($location, Graph, Vk) {
     const tokenRegEx = /access_token=(.*)&expires_in/;
     const userIdRegEx = /&user_id=(.*)/;
 
