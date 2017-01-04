@@ -4,7 +4,7 @@
  * Created by Drapegnik on 29.12.16.
  */
 
-vkGraphApp.service('Graph', ['$window', '$document', function($window, $document) {
+angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootScope', function($window, $document, $rootScope) {
     var Graph = this;
 
     var navbar = $document.find('.navbar');
@@ -84,6 +84,18 @@ vkGraphApp.service('Graph', ['$window', '$document', function($window, $document
             .attr('height', function(d) {return 2 * getNodeRadius(d);})
             .attr('width', function(d) {return 2 * getNodeRadius(d);})
             .attr('clip-path', 'url(#clipCircle)');
+
+        nodes.on("mouseover", function(d) {
+            $rootScope.$apply(function() {
+                $rootScope.currentName = d.name;
+            });
+        });
+
+        nodes.on("mouseout", function() {
+            $rootScope.$apply(function() {
+                $rootScope.currentName = '';
+            });
+        });
 
         function tick() {
             links

@@ -5,22 +5,6 @@ $icon-font-path: "bootstrap-sass/assets/fonts/bootstrap/";
 @import "bootswatch/paper/bootswatch";
 @import "bootstrap-social/bootstrap-social";
 
-//.svg-container {
-//  display: inline-block;
-//  position: relative;
-//  width: 100%;
-//  padding-bottom: 100%;
-//  vertical-align: middle;
-//  overflow: hidden;
-//}
-//
-//.svg-content {
-//  display: inline-block;
-//  position: absolute;
-//  top: 0;
-//  left: 0;
-//}
-
 .form-signin {
   max-width: 330px;
   padding: 15px;
@@ -51,4 +35,13 @@ $icon-font-path: "bootstrap-sass/assets/fonts/bootstrap/";
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
   border-radius: 50%;
+}
+
+.name {
+  padding-top: 8.5px;
+  color: white;
+}
+
+.swap-animation.ng-enter, .swap-animation.ng-leave {
+  transition:0.3s linear all;
 }

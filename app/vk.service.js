@@ -4,7 +4,7 @@
  * Created by Drapegnik on 29.12.16.
  */
 
-vkGraphApp.service('Vk', ['$http', '$q', function($http, $q) {
+angular.module('vkGraphApp').service('Vk', ['$http', '$q', function($http, $q) {
     var Vk = this;
     Vk.maxRequestsInSecond = 7;
 

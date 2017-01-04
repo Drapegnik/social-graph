@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "angular": "^1.6.1",
+    "angular-animate": "^1.6.1",
     "angular-resource": "^1.6.1",
     "body-parser": "^1.15.2",
     "bootstrap-sass": "^3.3.7",
