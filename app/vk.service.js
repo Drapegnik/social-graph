@@ -86,7 +86,7 @@ vkGraphApp.service('Vk', ['$http', '$q', function($http, $q) {
                 });
 
                 console.log('Successfully get ' + linksCounter + ' links');
-                return callback(graph);
+                return callback(graph, userId);
             })
             .catch(function(err) {
                 console.error(err);
