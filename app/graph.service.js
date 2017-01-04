@@ -4,20 +4,26 @@
  * Created by Drapegnik on 29.12.16.
  */
 
-vkGraphApp.service('Graph', [function() {
+vkGraphApp.service('Graph', ['$window', '$document', function($window, $document) {
     var Graph = this;
 
-    Graph.width = 900;
-    Graph.height = 900;
+    var navbar = $document.find('.navbar');
+
+    Graph.width = $window.innerWidth;
+    Graph.height = $window.innerHeight - navbar.height() - 10;
+
     Graph.center = {
-        x: 450,
-        y: 250
+        x: Graph.width / 2,
+        y: Graph.height / 2
     };
+
+    var minDem = Math.min(Graph.width, Graph.height);
+
     Graph.charge = {
-        strength: -150,
-        maxDist: 250
+        strength: -minDem / 2,
+        maxDist: minDem / 3
     };
-    Graph.nodeRadius = 12;
+    Graph.nodeRadius = minDem / 50;
 
     Graph.draw = function(data) {
         var svg = d3.select('#graph').append('svg')
