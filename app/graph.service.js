@@ -35,11 +35,11 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
 
         var linkedByIndex = {};
         data.links.forEach(function(d) {
-            linkedByIndex[d.source + "," + d.target] = true;
+            linkedByIndex[d.source + ',' + d.target] = true;
         });
 
         function isConnected(a, b) {
-            return linkedByIndex[a.id + "," + b.id] || linkedByIndex[b.id + "," + a.id] || a.id === b.id;
+            return linkedByIndex[a.id + ',' + b.id] || linkedByIndex[b.id + ',' + a.id] || a.id === b.id;
         }
 
         var svg = d3.select('#graph').append('svg')
@@ -94,16 +94,10 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             })
             .on('mousedown', function(d) {
                 simulation.stop();
-                links.style('opacity', function(o) {
-                    return o.source.id == d.id || o.target.id == d.id ? 1 : Graph.opacity;
-                });
-                nodes.style('opacity', function(o) {
-                    return isConnected(d, o) ? 1 : Graph.opacity;
-                })
+                hideNodes(d);
             })
-            .on('mouseup', function(d) {
-                links.style('opacity', 1);
-                nodes.style('opacity', 1);
+            .on('mouseup', function() {
+                showNodes();
                 simulation.restart();
             });
 
@@ -141,9 +135,9 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
                 return isConnected(d, o) ? Graph.highlightColor : getNodeColor(o);
             });
             links.style('stroke-width', function(o) {
-                return o.source.id == d.id || o.target.id == d.id ? Graph.linksSize * 3 : Graph.linksSize;
+                return o.source.id === d.id || o.target.id === d.id ? Graph.linksSize * 3 : Graph.linksSize;
             }).style('stroke', function(o) {
-                return o.source.id == d.id || o.target.id == d.id ? Graph.highlightColor : Graph.linksColor;
+                return o.source.id === d.id || o.target.id === d.id ? Graph.highlightColor : Graph.linksColor;
             });
         }
 
@@ -154,6 +148,20 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
                 .style('stroke', Graph.linksColor)
                 .style('stroke-width', Graph.linksSize);
 
+        }
+
+        function hideNodes(d) {
+            links.style('opacity', function(o) {
+                return o.source.id === d.id || o.target.id === d.id ? 1 : Graph.opacity;
+            });
+            nodes.style('opacity', function(o) {
+                return isConnected(d, o) ? 1 : Graph.opacity;
+            });
+        }
+
+        function showNodes() {
+            links.style('opacity', 1);
+            nodes.style('opacity', 1);
         }
     };
 }]);
