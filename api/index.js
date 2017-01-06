@@ -46,16 +46,8 @@ exports.getFriends = function(req, res, next) {
 
 exports.getMutual = function(req, res, next) {
     utils._getMutual(req.body.token, req.body.friendsIds)
-        .then(function(body) {
-
-            if (body.error) {
-                return next({
-                    status: 500,
-                    message: body.error.error_msg   // jshint ignore:line
-                });
-            }
-
-            res.json(body.response);
+        .then(function(response) {
+            res.json(response);
         })
         .catch(function(error) {
             return next(error);

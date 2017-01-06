@@ -4,13 +4,16 @@
  * Created by Drapegnik on 06.01.17.
  */
 
+var async = require('async');
 var request = require('request');
+var _ = require('lodash');
 
 var VK_API_URL = 'https://api.vk.com/method/';
 var API_VERSION = '5.60';
 var VK_AUTH_URL = 'oauth.vk.com/authorize/';
 var APP_ID = '5790001';
 var REDIRECT_URL = 'http://local.host:3000/home';
+var VK_MAX_REQUESTS_IN_SECOND = 7;
 
 exports._get = function(userId, token, url, method) {
     return new Promise(function(resolve, reject) {
@@ -34,21 +37,45 @@ exports._get = function(userId, token, url, method) {
 };
 
 exports._getMutual = function(token, friendsIds) {
+
+    var friendsChunks = _.chunk(friendsIds, 20);
+    var tasks = [];
+    friendsChunks.forEach(function(chunk) {
+        tasks.push(function(callback) {
+            request({
+                url: VK_API_URL + 'friends.getMutual',
+                qs: {
+                    access_token: token,   // jshint ignore:line
+                    v: API_VERSION,
+                    target_uids: chunk    // jshint ignore:line
+                },
+                method: 'POST'
+            }, function(error, response, body) {
+                if (error) {
+                    callback(error);
+                }
+
+                body = JSON.parse(body);
+
+                if (body.error) {
+                    callback({
+                        status: 500,
+                        message: body.error.error_msg   // jshint ignore:line
+                    });
+                }
+
+                callback(null, body.response);
+            });
+        });
+    });
+
     return new Promise(function(resolve, reject) {
-        request({
-            url: VK_API_URL + 'friends.getMutual',
-            qs: {
-                access_token: token,   // jshint ignore:line
-                v: API_VERSION,
-                target_uids: friendsIds    // jshint ignore:line
-            },
-            method: 'POST'
-        }, function(error, response, body) {
+        async.parallelLimit(tasks, VK_MAX_REQUESTS_IN_SECOND, function(error, results) {
             if (error) {
                 reject(error);
             }
 
-            resolve(JSON.parse(body));
+            resolve([].concat.apply([], results));
         });
     });
 };
@@ -58,3 +85,4 @@ exports.API_VERSION = API_VERSION;
 exports.VK_AUTH_URL = VK_AUTH_URL;
 exports.APP_ID = APP_ID;
 exports.REDIRECT_URL = REDIRECT_URL;
+exports.VK_MAX_REQUESTS_IN_SECOND = VK_MAX_REQUESTS_IN_SECOND;

@@ -4,9 +4,8 @@
  * Created by Drapegnik on 29.12.16.
  */
 
-angular.module('vkGraphApp').service('Vk', ['$http', '$q', function($http, $q) {
+angular.module('vkGraphApp').service('Vk', ['$http', function($http) {
     var Vk = this;
-    Vk.maxRequestsInSecond = 7;
 
     var graph = {
         directed: false,
@@ -52,36 +51,26 @@ angular.module('vkGraphApp').service('Vk', ['$http', '$q', function($http, $q) {
                     addFriendToGraph(userId, friend);
                 });
 
-                var friendsChunks = _.chunk(friends.map(function(friend) {
+                var friendsIds = friends.map(function(friend) {
                     if (!friend.deactivated) {
                         return friend.id;
                     }
-                }), Math.round(friends.length / Vk.maxRequestsInSecond));
-
-                var urlCalls = [];
-                friendsChunks.forEach(function(chunk) {
-                    urlCalls.push($http.post('/api/getMutual', {token: token, userId: userId, friendsIds: chunk}));
                 });
 
-                return $q.all(urlCalls);
+                return $http.post('/api/getMutual', {token: token, userId: userId, friendsIds: friendsIds});
             })
-            .then(function(responses) {
+            .then(function(response) {
                 var linksCounter = 0;
 
-                responses.forEach(function(response) {
-                    if (!response.data || typeof response.data[Symbol.iterator] !== 'function') {
-                        return;
-                    }
-                    response.data.forEach(function(friend) {
-                        friend.common_friends.forEach(function(target) {    // jshint ignore:line
-                            graph.links.push({
-                                source: friend.id,
-                                target: target
-                            });
-                            linksCounter += 1;
+                console.log(response);
+
+                response.data.forEach(function(friend) {
+                    friend.common_friends.forEach(function(target) {    // jshint ignore:line
+                        graph.links.push({
+                            source: friend.id,
+                            target: target
                         });
-
-
+                        linksCounter += 1;
                     });
                 });
 
