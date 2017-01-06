@@ -39,7 +39,7 @@ angular.module('vkGraphApp').service('Vk', ['$http', '$q', function($http, $q) {
 
         $http.post('/api/getUser', {token: token, userId: userId})
             .then(function(response) {
-                me = parseUserInfo(response.data[0]);
+                me = parseUserInfo(response.data);
                 graph.nodes.push(me);
                 return $http.post('/api/getFriends', {token: token, userId: userId});
             })

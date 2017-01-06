@@ -22,12 +22,12 @@ angular.module('vkGraphApp').controller('HomeCtrl', ['$scope', '$http', '$locati
         }
 
         $scope.createDB = function() {
-            $http.get('/api/createDB', {token: $scope.token, userId: $scope.userId})
+            $http.post('/api/createDB', {token: $scope.token, userId: $scope.userId})
                 .then(function(response) {
                     console.log(response);
                 })
                 .catch(function(err) {
                     console.error(err);
                 });
-        }
+        };
     }]);
