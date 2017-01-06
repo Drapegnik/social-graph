@@ -8,8 +8,8 @@
 ## install
 ```
 npm i
-node server.js
 grunt
+node server.js
 ```
 
 open http://local.host:3000
