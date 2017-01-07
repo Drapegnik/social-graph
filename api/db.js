@@ -25,6 +25,8 @@ var _getOutputObject = function(result, properties) {
 };
 
 exports._createDB = function(req, res, next) {
+    var friendsIds = [];
+
     session.run('MATCH (n) DETACH DELETE n')
         .then(function(result) {
             console.log('-- clean up db:', _getOutputObject(result, ['nodesDeleted', 'relationshipsDeleted']));
@@ -41,17 +43,38 @@ exports._createDB = function(req, res, next) {
         })
         .then(function(response) {
             var friends = _.map(response.items, _parseUserData);
+            friendsIds = _.map(response.items, function(friend) {
+                if (!friend.deactivated) {
+                    return friend.id;
+                }
+            });
             return session.run(
                 'MATCH (you:Person {id:{yourId}}) ' +
                 'FOREACH (f in {friendsList} | ' +
-                'CREATE (you)-[:FRIEND]->(:Person {id: f.id, name: f.name, sex: f.sex, bdate: f.bdate, photo: f.photo_50}))',
+                'CREATE UNIQUE (you)-[:FRIEND]-(:Person {id: f.id, name: f.name, sex: f.sex, bdate: f.bdate, photo: f.photo_50}))',
                 {yourId: req.body.userId, friendsList: friends}
             );
         })
         .then(function(result) {
             console.log('-- add your friends:', _getOutputObject(result, ['nodesCreated', 'relationshipsCreated']));
+            return utils._getMutual(req.body.token, friendsIds);
+        })
+        .then(function(response) {
+            return session.run(
+                'FOREACH (fData in {friendsData} | ' +
+                '   FOREACH (commFriendId in fData.common_friends | ' +
+                '       MERGE (a:Person {id:fData.id}) ' +
+                '       MERGE (b:Person {id:commFriendId}) ' +
+                '       CREATE UNIQUE (a)-[:FRIEND]-(b)' +
+                '   )' +
+                ')', {friendsData: response}
+            );
+        })
+        .then(function(result) {
+            console.log('-- add friends relationships:', _getOutputObject(result, ['relationshipsCreated']));
         })
         .catch(function(error) {
+            console.log(error);
             next(error);
         });
 

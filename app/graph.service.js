@@ -33,13 +33,13 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
 
     Graph.draw = function(data, myId) {
 
-        var linkedByIndex = {};
+        var linksMap = {};
         data.links.forEach(function(d) {
-            linkedByIndex[d.source + ',' + d.target] = true;
+            linksMap[d.source + ',' + d.target] = true;
         });
 
         function isConnected(a, b) {
-            return linkedByIndex[a.id + ',' + b.id] || linkedByIndex[b.id + ',' + a.id] || a.id === b.id;
+            return linksMap[a.id + ',' + b.id] || linksMap[b.id + ',' + a.id] || a.id === b.id;
         }
 
         var svg = d3.select('#graph').append('svg')

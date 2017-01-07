@@ -61,16 +61,19 @@ angular.module('vkGraphApp').service('Vk', ['$http', function($http) {
             })
             .then(function(response) {
                 var linksCounter = 0;
-
-                console.log(response);
+                var linksMap = {};
 
                 response.data.forEach(function(friend) {
                     friend.common_friends.forEach(function(target) {    // jshint ignore:line
-                        graph.links.push({
-                            source: friend.id,
-                            target: target
-                        });
-                        linksCounter += 1;
+
+                        if (!linksMap[friend.id + ',' + target] && !linksMap[target + ',' + friend.id]) {
+                            linksMap[friend.id + ',' + target] = true;
+                            graph.links.push({
+                                source: friend.id,
+                                target: target
+                            });
+                            linksCounter += 1;
+                        }
                     });
                 });
 
