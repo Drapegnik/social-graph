@@ -7,6 +7,12 @@
 
 ## install
 ```
+git clone https://github.com/Drapegnik/social-graph.git
+git checkout release
+```
+
+## run
+```
 npm i
 grunt
 node server.js
