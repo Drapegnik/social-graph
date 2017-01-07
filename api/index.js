@@ -7,7 +7,6 @@
 var url = require('url');
 
 var utils = require('./utils');
-var db = require('./db');
 
 exports.auth = function(req, res) {
     res.redirect(url.format({
@@ -65,5 +64,3 @@ exports.home = function(req, res) {
         view: '"app/views/home.view.html"'
     });
 };
-
-exports.createDB = db._createDB;

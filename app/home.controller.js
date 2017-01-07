@@ -20,14 +20,4 @@ angular.module('vkGraphApp').controller('HomeCtrl', ['$scope', '$http', '$locati
             console.log('Successfully login into vk!');
             Vk.getGraphData($scope.token, $scope.userId, Graph.draw);
         }
-
-        $scope.createDB = function() {
-            $http.post('/api/createDB', {token: $scope.token, userId: $scope.userId})
-                .then(function(response) {
-                    console.log(response);
-                })
-                .catch(function(err) {
-                    console.error(err);
-                });
-        };
     }]);
