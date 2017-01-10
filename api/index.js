@@ -67,3 +67,4 @@ exports.home = function(req, res) {
 };
 
 exports.createDB = db._createDB;
+exports.getRecommendation = db._getRecommendation;

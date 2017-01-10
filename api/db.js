@@ -80,3 +80,24 @@ exports._createDB = function(req, res, next) {
 
     res.sendStatus(200);
 };
+
+exports._getRecommendation = function(req, res, next) {
+    session.run(
+        'MATCH (user:Person {id: {userId}})-[:FRIEND]-(userFriends)-[:FRIEND]-(userFriendsFriends)' +
+        'WHERE NOT (user)-[:FRIEND]-(userFriendsFriends)' +
+        'RETURN userFriendsFriends.id, userFriendsFriends.name, count(*) AS CommonFriends ORDER BY CommonFriends DESC LIMIT 5',
+        {userId: neo4j.int(req.params.userId)}
+    ).then(function(results) {
+        var response = results.records.map(function(record) {
+            return {
+                id: record._fields[0],
+                name: record._fields[1],
+                common: record._fields[2].low
+            };
+        });
+        res.send(response);
+    }).catch(function(error) {
+        console.log(error);
+        next(error);
+    });
+};

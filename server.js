@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/', express.static(__dirname));
 
+app.use('/api/getRecommendation/:userId', api.getRecommendation);
 app.use('/api/auth', api.auth);
 app.use('/api/getUser', api.getUser);
 app.use('/api/getFriends', api.getFriends);
