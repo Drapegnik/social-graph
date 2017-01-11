@@ -29,6 +29,7 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
     Graph.linksColor = '#ccc';
     Graph.linksSize = 0.5;
     Graph.highlightColor = '#ff6666';
+    Graph.recommendationColor = '#ffff66';
     Graph.opacity = 0.3;
 
     Graph.draw = function(data, myId) {
@@ -85,7 +86,6 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
 
         nodes
             .on('mouseover', function(d) {
-                highlightNode(d);
                 getRecommendation(d);
                 $rootScope.$apply(function() {$rootScope.currentName = d.name;});
             })
@@ -133,10 +133,14 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             }
         }
 
-        function highlightNode(d) {
+        function highlightNode(d, recIds) {
             svg.style('cursor', 'pointer');
             circles.style('stroke', function(o) {
-                return isConnected(d, o) ? Graph.highlightColor : getNodeColor(o);
+                if (recIds.includes(o.id)) {
+                    return Graph.recommendationColor;
+                } else {
+                    return isConnected(d, o) ? Graph.highlightColor : getNodeColor(o);
+                }
             });
             links.style('stroke-width', function(o) {
                 return o.source.id === d.id || o.target.id === d.id ? Graph.linksSize * 3 : Graph.linksSize;
@@ -172,6 +176,8 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             Graph.getRecommendation(d.id)
                 .then(function(response) {
                     $rootScope.recommendations = response.data;
+                    var recIds = response.data.map(function(user) {return user.id;});
+                    highlightNode(d, recIds);
                 })
                 .catch(function(err) {
                     console.error(err);

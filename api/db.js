@@ -95,7 +95,7 @@ exports._getRecommendation = function(req, res, next) {
                 common: record._fields[2].low
             };
         });
-        if (response[0].common < 2) {
+        if (!response[0] || response[0].common < 2) {
             response = [];
         }
         res.send(response);
