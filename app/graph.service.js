@@ -4,7 +4,7 @@
  * Created by Drapegnik on 29.12.16.
  */
 
-angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootScope', function($window, $document, $rootScope) {
+angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootScope', '$http', function($window, $document, $rootScope, $http) {
     var Graph = this;
 
     var navbar = $document.find('.navbar');
@@ -86,11 +86,15 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
         nodes
             .on('mouseover', function(d) {
                 highlightNode(d);
+                getRecommendation(d);
                 $rootScope.$apply(function() {$rootScope.currentName = d.name;});
             })
             .on('mouseout', function() {
                 unHighlightNode();
-                $rootScope.$apply(function() {$rootScope.currentName = '';});
+                $rootScope.$apply(function() {
+                    $rootScope.currentName = '';
+                    $rootScope.recommendations = [];
+                });
             })
             .on('mousedown', function(d) {
                 simulation.stop();
@@ -163,5 +167,19 @@ angular.module('vkGraphApp').service('Graph', ['$window', '$document', '$rootSco
             links.style('opacity', 1);
             nodes.style('opacity', 1);
         }
+
+        function getRecommendation(d) {
+            Graph.getRecommendation(d.id)
+                .then(function(response) {
+                    $rootScope.recommendations = response.data;
+                })
+                .catch(function(err) {
+                    console.error(err);
+                });
+        }
+    };
+
+    Graph.getRecommendation = function(userId) {
+        return $http.get('/api/getRecommendation/' + userId);
     };
 }]);

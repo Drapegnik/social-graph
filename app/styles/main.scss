@@ -45,3 +45,9 @@ $icon-font-path: "bootstrap-sass/assets/fonts/bootstrap/";
 .swap-animation.ng-enter, .swap-animation.ng-leave {
   transition:0.3s linear all;
 }
+
+.recommendation-box {
+  position: absolute;
+  right: 20px;
+  z-index: 0;
+}
