@@ -25,7 +25,7 @@ app.use('/', api.login);
 
 app.use(function onError(err, req, res) {
     console.error(err);
-    res.status(err.status);
+    res.status(err.status || 500);
     res.send(err.message);
 });
 
