@@ -10,6 +10,7 @@
 git clone https://github.com/Drapegnik/social-graph.git
 git checkout release
 ```
+* add `local.host` to your hosts file  point to `127.0.0.1`
 
 ## run
 ```
@@ -17,5 +18,9 @@ npm i
 grunt
 node server.js
 ```
+open [local.host:3000](http://local.host:3000)
 
-open http://local.host:3000
+## development
+
+* my vk-app settings
+![](http://res.cloudinary.com/dzsjwgjii/image/upload/v1492552854/vk-app.png)
