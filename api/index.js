@@ -9,7 +9,7 @@ var url = require('url');
 var utils = require('./utils');
 var db = require('./db');
 
-exports.auth = function(req, res) {
+exports.auth = function (req, res) {
     res.redirect(url.format({
         host: utils.VK_AUTH_URL,
         protocol: 'https:',
@@ -24,43 +24,43 @@ exports.auth = function(req, res) {
     }));
 };
 
-exports.getUser = function(req, res, next) {
+exports.getUser = function (req, res, next) {
     utils._get(req.body.userId, req.body.token, 'users.get', 'GET')
-        .then(function(response) {
+        .then(function (response) {
             res.json(response[0]);
         })
-        .catch(function(error) {
+        .catch(function (error) {
             return next(error);
         });
 };
 
-exports.getFriends = function(req, res, next) {
+exports.getFriends = function (req, res, next) {
     utils._get(req.body.userId, req.body.token, 'friends.get', 'POST')
-        .then(function(response) {
+        .then(function (response) {
             res.json(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
             return next(error);
         });
 };
 
-exports.getMutual = function(req, res, next) {
+exports.getMutual = function (req, res, next) {
     utils._getMutual(req.body.token, req.body.friendsIds)
-        .then(function(response) {
+        .then(function (response) {
             res.json(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
             return next(error);
         });
 };
 
-exports.login = function(req, res) {
+exports.login = function (req, res) {
     res.render('index.ejs', {
         view: '"app/views/login.view.html"'
     });
 };
 
-exports.home = function(req, res) {
+exports.home = function (req, res) {
     res.render('index.ejs', {
         view: '"app/views/home.view.html"'
     });

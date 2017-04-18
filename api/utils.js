@@ -13,10 +13,11 @@ var API_VERSION = '5.60';
 var VK_AUTH_URL = 'oauth.vk.com/authorize/';
 var APP_ID = '5790001';
 var REDIRECT_URL = 'http://local.host:3000/home';
-var VK_MAX_REQUESTS_IN_SECOND = 7;
+var VK_MAX_REQUESTS_PER_SECOND = 7;
+var FRIENDS_IN_REQUEST = 50;
 
-exports._get = function(userId, token, url, method) {
-    return new Promise(function(resolve, reject) {
+exports._get = function (userId, token, url, method) {
+    return new Promise(function (resolve, reject) {
         request({
             user_ids: userId,  // jshint ignore:line
             url: VK_API_URL + url,
@@ -26,22 +27,22 @@ exports._get = function(userId, token, url, method) {
                 fields: 'photo_50, sex, bdate'
             },
             method: method
-        }, function(error, response, body) {
+        }, function (error, response, body) {
             if (error) {
-                reject(error);
+                return reject(error);
             }
 
-            resolve(JSON.parse(body).response);
+            return resolve(JSON.parse(body).response);
         });
     });
 };
 
-exports._getMutual = function(token, friendsIds) {
+exports._getMutual = function (token, friendsIds) {
 
-    var friendsChunks = _.chunk(friendsIds, 20);
+    var friendsChunks = _.chunk(friendsIds, FRIENDS_IN_REQUEST);
     var tasks = [];
-    friendsChunks.forEach(function(chunk) {
-        tasks.push(function(callback) {
+    friendsChunks.forEach(function (chunk) {
+        tasks.push(function (callback) {
             request({
                 url: VK_API_URL + 'friends.getMutual',
                 qs: {
@@ -50,32 +51,29 @@ exports._getMutual = function(token, friendsIds) {
                     target_uids: chunk    // jshint ignore:line
                 },
                 method: 'POST'
-            }, function(error, response, body) {
+            }, function (error, response, body) {
                 if (error) {
-                    callback(error);
+                    return callback(error);
                 }
 
                 body = JSON.parse(body);
 
                 if (body.error) {
-                    callback({
-                        status: 500,
-                        message: body.error.error_msg   // jshint ignore:line
-                    });
+                    return callback(new Error(body.error.error_msg));
                 }
 
-                callback(null, body.response);
+                return callback(null, body.response);
             });
         });
     });
 
-    return new Promise(function(resolve, reject) {
-        async.parallelLimit(tasks, VK_MAX_REQUESTS_IN_SECOND, function(error, results) {
+    return new Promise(function (resolve, reject) {
+        async.parallelLimit(tasks, VK_MAX_REQUESTS_PER_SECOND, function (error, results) {
             if (error) {
-                reject(error);
+                return reject(error);
             }
 
-            resolve([].concat.apply([], results));
+            return resolve([].concat.apply([], results));
         });
     });
 };
@@ -85,4 +83,5 @@ exports.API_VERSION = API_VERSION;
 exports.VK_AUTH_URL = VK_AUTH_URL;
 exports.APP_ID = APP_ID;
 exports.REDIRECT_URL = REDIRECT_URL;
-exports.VK_MAX_REQUESTS_IN_SECOND = VK_MAX_REQUESTS_IN_SECOND;
+exports.VK_MAX_REQUESTS_PER_SECOND = VK_MAX_REQUESTS_PER_SECOND;
+exports.FRIENDS_IN_REQUEST = FRIENDS_IN_REQUEST;

@@ -21,13 +21,12 @@ app.use('/api/auth', api.auth);
 app.use('/api/getUser', api.getUser);
 app.use('/api/getFriends', api.getFriends);
 app.use('/api/getMutual', api.getMutual);
-app.use('/api/createDB', api.createDB);
 app.use('/home', api.home);
 app.use('/', api.login);
 
 app.use(function onError(err, req, res) {
     console.error(err);
-    res.status(err.status);
+    res.status(err.status || 500);
     res.send(err.message);
 });
 
