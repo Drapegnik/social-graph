@@ -1,4 +1,6 @@
 # social-graph
+[![Code Climate](https://codeclimate.com/github/Drapegnik/social-graph/badges/gpa.svg)](https://codeclimate.com/github/Drapegnik/social-graph) [![Issue Count](https://codeclimate.com/github/Drapegnik/social-graph/badges/issue_count.svg)](https://codeclimate.com/github/Drapegnik/social-graph)
+
 :two_men_holding_hands: visualize your vk friends like social graph
 
 ## demo
