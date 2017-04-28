@@ -1,4 +1,5 @@
 # social-graph
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c875432edd4f4014a16ae3f6f884e31b)](https://www.codacy.com/app/Drapegnik/social-graph?utm_source=github.com&utm_medium=referral&utm_content=Drapegnik/social-graph&utm_campaign=badger)
 [![Code Climate](https://codeclimate.com/github/Drapegnik/social-graph/badges/gpa.svg)](https://codeclimate.com/github/Drapegnik/social-graph) [![Issue Count](https://codeclimate.com/github/Drapegnik/social-graph/badges/issue_count.svg)](https://codeclimate.com/github/Drapegnik/social-graph)
 
 :two_men_holding_hands: visualize your vk friends like social graph
