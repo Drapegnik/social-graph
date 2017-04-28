@@ -7,8 +7,8 @@
 angular.module('vkGraphApp').controller('HomeCtrl', ['$scope', '$http', '$location', 'Graph', 'Vk',
     function($scope, $http, $location, Graph, Vk) {
 
-        const tokenRegEx = /access_token=(.*)&expires_in/;
-        const userIdRegEx = /&user_id=(.*)/;
+        var tokenRegEx = /access_token=(.*)&expires_in/;
+        var userIdRegEx = /&user_id=(.*)/;
 
         $scope.auth = false;
 

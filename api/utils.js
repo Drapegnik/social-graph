@@ -59,7 +59,7 @@ exports._getMutual = function (token, friendsIds) {
                 body = JSON.parse(body);
 
                 if (body.error) {
-                    return callback(new Error(body.error.error_msg));
+                    return callback(new Error(body.error.error_msg)); // jshint ignore:line
                 }
 
                 return callback(null, body.response);

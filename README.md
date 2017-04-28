@@ -17,8 +17,7 @@ git checkout release
 ## run
 ```
 npm i
-grunt
-node server.js
+npm start
 ```
 open [local.host:3000](http://local.host:3000)
 
@@ -26,3 +25,9 @@ open [local.host:3000](http://local.host:3000)
 
 * my vk-app settings
 ![](http://res.cloudinary.com/dzsjwgjii/image/upload/v1492552854/vk-app.png)
+
+* scripts:
+    * `npm start`: server start
+    * `npm run build`: styles compiling
+    * `npm run hint`: code style check
+    * `npm run lint`: code style check

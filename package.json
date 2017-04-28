@@ -9,7 +9,11 @@
     "url": ""
   },
   "scripts": {
-    "run": "node server.js"
+    "run": "node server.js",
+    "lint": "eslint .",
+    "hint": "grunt hint",
+    "build": "grunt",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "angular": "^1.6.1",
@@ -32,6 +36,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^6.6.0",
+    "eslint": "^3.19.0",
     "grunt": "^0.4.5",
     "grunt-concurrent": "^1.0.0",
     "grunt-contrib-clean": "^0.6.0",
